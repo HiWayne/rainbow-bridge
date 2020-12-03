@@ -12,11 +12,11 @@
     "baseUrl": "./",
     "incremental": true,
     "paths": {
-      "~": ["./src"],
-      "shared": ["./src/shared"],
+      "~/*": ["./src/*"],
+      "shared/*": ["./src/shared/*"],
       "public.key": ["./public.key"],
       "private.key": ["./private.key"],
-      "components": ["./src/components"]
+      "components/*": ["./src/components/*"]
     }
   }
 }
