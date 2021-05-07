@@ -3,27 +3,24 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { Expose, Exclude } from 'class-transformer';
 
 @Entity()
 @Exclude()
-export class User {
+export class RoleOfUser {
   @Expose()
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn('int')
   id: number;
 
   @Expose()
-  @Column({ length: 15 })
-  name: string;
-
-  @Expose({ toClassOnly: true })
   @Column('text')
-  avatar: string;
+  roles: string;
 
-  @Expose({ toClassOnly: true })
-  @Column('text')
-  desc: string;
+  @Expose()
+  @Column('datetime')
+  update_time: string;
 
   @Expose()
   @CreateDateColumn({ type: 'datetime' })

@@ -1,20 +1,75 @@
-import { Controller, Get, Post, Body, Query, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  UsePipes,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserCreateDTO, UserFindByIdDTO, UserFindByNameDTO } from 'shared/DTO/user/user.dto';
-import { UserPipe } from 'shared/Pipe/user/user.pipe';
+import {
+  UserCreateDto,
+  UserFindByIdDto,
+  UserFindByNameDto,
+  UserNameDto,
+  LoginDto,
+  RefreshTokenDto,
+  GetUserProfileDto,
+} from '~/dto/user/user.dto';
+import { UserPipe } from '~/pipe/user/user.pipe';
+import { AuthenticationGuard } from '~/guard/authentication/authentication.guard';
+import { Role } from '~/decorators/role';
+import { Roles } from 'config/index';
 
 @Controller('api')
+@UsePipes(UserPipe)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post('/user/create/')
-  @UsePipes(UserPipe)
-  async createUser(@Body() body: UserCreateDTO) {
+  @Post('/user/create')
+  async createUser(@Body() body: UserCreateDto) {
     return await this.userService.createUser(body);
   }
 
-  @Get('user/find')
-  async findUsers(@Query() query: UserFindByIdDTO | UserFindByNameDTO) {
-    return await this.userService.findAll(query);
+  @Get('/username/check')
+  async checkUserName(@Query() query: UserNameDto) {
+    return await this.userService.checkUserName(query);
+  }
+
+  @Post('/user/login')
+  async login(@Body() body: LoginDto) {
+    return await this.userService.login(body);
+  }
+
+  @Get('/user/find/by/id')
+  async findUserById(@Query() query: UserFindByIdDto) {
+    const user = await this.userService.findByCondition(query);
+    if (user && user.length) {
+      return user[0];
+    } else {
+      return null;
+    }
+  }
+
+  @Get('/user/find/by/name')
+  async findUsersByName(@Query() query: UserFindByNameDto) {
+    return await this.userService.findByCondition(query);
+  }
+
+  @Post('/user/refresh/token')
+  async refreshToken(@Body() body: RefreshTokenDto) {
+    return await this.userService.refreshToken(body);
+  }
+
+  @Get('/user/profile')
+  async getUserProfile(@Query() query: GetUserProfileDto) {
+    return this.userService.getUserProfile(query);
+  }
+
+  @Get('/user/test')
+  @UseGuards(AuthenticationGuard)
+  async test() {
+    return 'test';
   }
 }

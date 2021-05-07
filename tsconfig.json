@@ -6,7 +6,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "es2020",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
@@ -14,9 +14,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "shared/*": ["./src/shared/*"],
-      "public.key": ["./public.key"],
-      "private.key": ["./private.key"],
-      "components/*": ["./src/components/*"]
+      "components/*": ["./src/components/*"],
+      "config/*": ["./config/*"],
     }
   }
 }

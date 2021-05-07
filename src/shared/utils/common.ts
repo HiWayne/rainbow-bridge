@@ -1,3 +1,67 @@
+import { plainToClass } from 'class-transformer';
+import { validate } from 'class-validator';
+import { BadRequestException } from '@nestjs/common';
+import { ClassType } from 'class-transformer/ClassTransformer';
+
+export const isExist = value =>
+  value !== undefined && value !== null && !Number.isNaN(value);
+
+export const getTimeWithMillisecond = (n = 0, unit: string): number => {
+  if (isNaN(Number(n)) || !unit) {
+    throw new Error('getTimeWithMillisecond参数有误');
+  }
+  let coefficient = 1;
+  switch (unit) {
+    case 'second':
+      coefficient = 1000;
+      break;
+    case 'minute':
+      coefficient = 1000 * 60;
+      break;
+    case 'hour':
+      coefficient = 1000 * 60 * 60;
+      break;
+    case 'day':
+      coefficient = 1000 * 60 * 60 * 24;
+      break;
+    case 'month':
+      coefficient = 1000 * 60 * 60 * 24 * 30;
+      break;
+    case 'year':
+      coefficient = 1000 * 60 * 60 * 24 * 30 * 12;
+      break;
+    default:
+      break;
+  }
+  return new Date().getTime() + n * coefficient;
+};
+
+function filterObject<T>(object: T): T {
+  // @ts-ignore
+  Reflect.ownKeys(object).forEach(key => {
+    const value = object[key];
+    if (!isExist(value)) {
+      delete object[key];
+    }
+  });
+  return object;
+}
+
+export async function transformClass<T, V>(
+  cls: ClassType<T>,
+  plain: V,
+): Promise<T> {
+  const transformedValue = plainToClass(cls, plain, {
+    excludeExtraneousValues: true,
+  });
+  const errors = await validate(transformedValue);
+  const errorLenth = errors.length;
+  if (errorLenth > 0) {
+    throw new BadRequestException(Object.values(errors[0].constraints)[0]);
+  }
+  return filterObject<T>(transformedValue);
+}
+
 const createRequestHandle = requestHandle => ({
   method: requestHandle && requestHandle.method ? requestHandle.method : 'get',
   handle: (request, reply, client) => {

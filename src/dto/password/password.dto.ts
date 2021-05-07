@@ -1,6 +1,6 @@
 import { IsInt, Min, IsString, MinLength } from 'class-validator';
 
-export class passwordDTO {
+export class PasswordDto {
   // 用户id，逻辑外键
   @IsInt()
   @Min(1)
@@ -8,5 +8,5 @@ export class passwordDTO {
 
   @IsString()
   @MinLength(64, { message: 'hash位数不能小于64' })
-  hash: string;
+  readonly hash: string;
 }

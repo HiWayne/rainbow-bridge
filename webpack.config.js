@@ -26,9 +26,8 @@ module.exports = {
     alias: {
       '~': path.resolve(__dirname, './src'),
       shared: path.resolve(__dirname, './src/shared'),
-      'public.key': path.resolve(__dirname, './public.key'),
-      'private.key': path.resolve(__dirname, './private.key'),
       components: path.resolve(__dirname, './src/components'),
+      config: path.resolve(__dirname, './config')
     },
     modules: ['fs', 'path', 'node_modules'],
   },
