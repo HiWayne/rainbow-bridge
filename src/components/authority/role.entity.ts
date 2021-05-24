@@ -8,22 +8,33 @@ import { Expose, Exclude } from 'class-transformer';
 
 @Entity()
 @Exclude()
-export class User {
+export class Role {
   @Expose()
   @PrimaryGeneratedColumn()
   id: number;
 
   @Expose()
-  @Column({ length: 15 })
+  @Column({ length: 20 })
   name: string;
 
-  @Expose({ toClassOnly: true })
-  @Column('text')
-  avatar: string;
-
-  @Expose({ toClassOnly: true })
-  @Column('text')
+  @Expose()
+  @Column({ length: 100 })
   desc: string;
+
+  @Column('boolean')
+  fundamental: boolean;
+
+  @Column('int')
+  creator: number;
+
+  @Column('text')
+  role_of_creator: string;
+
+  @Column('text')
+  authorities: string;
+
+  @Column('int')
+  extend: number;
 
   @Expose()
   @CreateDateColumn({ type: 'datetime' })

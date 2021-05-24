@@ -4,6 +4,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import { ResponseInterceptor } from '~/interceptor/common/response.interceptor';
 
 declare const module: any;
 
@@ -12,9 +13,10 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({ logger: true }),
   );
+  app.useGlobalInterceptors(new ResponseInterceptor<any>());
   await app.listen(3000);
 
-  if (module.hot) {
+  if (module && module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());
   }
