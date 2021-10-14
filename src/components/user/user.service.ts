@@ -101,11 +101,11 @@ export class UserService {
     const { name, password } = body;
     const users = await this.findByCondition({ name });
     const NO_ACCESS_REQUEST = new HttpException(
-      { data: false, message: '用户名或密码错误' },
+      { status: 4, data: false, message: '用户名或密码错误' },
       HttpStatus.BAD_REQUEST,
     );
     const BAD_RESPONSE = new HttpException(
-      { data: false, message: '' },
+      { status: 2, data: false, message: '' },
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
     if (users && users.length) {
