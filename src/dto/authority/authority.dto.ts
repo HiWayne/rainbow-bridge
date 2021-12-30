@@ -31,17 +31,6 @@ export class CreateRoleDto {
   readonly name: string;
 }
 
-export class CreateRoleByExtendDto {
-  @MaxLength(20, { message: '名称不能超过20个字' })
-  @IsString({ message: '名称必须是字符串' })
-  @IsNotEmpty({ message: '名称不能为空' })
-  readonly name: string;
-
-  @IsInt({ message: 'extend必须是数字' })
-  @IsNotEmpty({ message: 'extend的id不能为空' })
-  readonly extend: number;
-}
-
 export class CreateAuthenticationDto {
   @MaxLength(20, { message: '名称不能超过20个字' })
   @IsString({ message: '名称必须是字符串' })

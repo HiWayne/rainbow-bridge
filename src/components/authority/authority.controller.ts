@@ -16,7 +16,6 @@ import {
   SetRolesToUser,
   CreateAuthenticationDto,
   CreateRoleDto,
-  CreateRoleByExtendDto,
   RoleAddAuthenticationDto,
   RoleRemoveAuthenticationDto,
   DeleteAuthenticationDto,
@@ -74,16 +73,6 @@ export class AuthorityController {
   @UseGuards(AuthenticationGuard)
   async createRole(@Body() body: CreateRoleDto, @Request() request) {
     return this.authorityService.createRole(body, request);
-  }
-
-  @Post('/role/create/by/extend')
-  @Role(Roles.ADMIN)
-  @UseGuards(AuthenticationGuard)
-  async createRoleByExtend(
-    @Body() body: CreateRoleByExtendDto,
-    @Request() request,
-  ) {
-    return;
   }
 
   @Role(Roles.ADMIN)
