@@ -1,3 +1,23 @@
+# Nest + Mysql + typeorm
+
+## 介绍
+
+这是一个 node 后端系统。包括用户系统、权限系统等。用户系统采用加盐 SHA512 哈希+10000 次派生算法加密，保证了密码存储的高安全性。用户身份使用双 token (access token + refresh token) 验证，非对称加密算法使用 HS512。权限系统基于 RBAC 设计。
+
+## 使用
+
+1. 安装 mysql
+
+2. 启动 mysql
+
+3. 执行/sqls/create.sql 创建数据库
+
+4. npm install
+
+5. npm run start (本地运行) / npm run build && npm run start:prod (生产运行)
+
+6. 接口地址看各个 `xxx.controller.ts`
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
@@ -6,7 +26,7 @@
 [travis-url]: https://travis-ci.org/nestjs/nest
 [linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
 [linux-url]: https://travis-ci.org/nestjs/nest
-  
+
   <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
     <p align="center">
 <a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
@@ -72,4 +92,4 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## License
 
-  Nest is [MIT licensed](LICENSE).
+Nest is [MIT licensed](LICENSE).

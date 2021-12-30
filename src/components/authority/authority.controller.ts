@@ -21,14 +21,14 @@ import {
   DeleteAuthenticationDto,
   DeleteRoleDto,
 } from '~/dto/authority/authority.dto';
-import { UserPipe } from '~/pipe/user/user.pipe';
+import { VerifyPipe } from '~/pipe/common/user.pipe';
 import { AuthenticationGuard } from '~/guard/authentication/authentication.guard';
 import { Role } from '~/decorators/role';
 import { Roles } from 'config/index';
 import { UserService } from 'components/user/user.service';
 
 @Controller('api')
-@UsePipes(UserPipe)
+@UsePipes(VerifyPipe)
 export class AuthorityController {
   constructor(
     private readonly authorityService: AuthorityService,
