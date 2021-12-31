@@ -16,20 +16,19 @@ import {
   SetRolesToUser,
   CreateAuthenticationDto,
   CreateRoleDto,
-  CreateRoleByExtendDto,
   RoleAddAuthenticationDto,
   RoleRemoveAuthenticationDto,
   DeleteAuthenticationDto,
   DeleteRoleDto,
 } from '~/dto/authority/authority.dto';
-import { UserPipe } from '~/pipe/user/user.pipe';
+import { VerifyPipe } from '~/pipe/common/user.pipe';
 import { AuthenticationGuard } from '~/guard/authentication/authentication.guard';
 import { Role } from '~/decorators/role';
 import { Roles } from 'config/index';
 import { UserService } from 'components/user/user.service';
 
 @Controller('api')
-@UsePipes(UserPipe)
+@UsePipes(VerifyPipe)
 export class AuthorityController {
   constructor(
     private readonly authorityService: AuthorityService,
@@ -74,16 +73,6 @@ export class AuthorityController {
   @UseGuards(AuthenticationGuard)
   async createRole(@Body() body: CreateRoleDto, @Request() request) {
     return this.authorityService.createRole(body, request);
-  }
-
-  @Post('/role/create/by/extend')
-  @Role(Roles.ADMIN)
-  @UseGuards(AuthenticationGuard)
-  async createRoleByExtend(
-    @Body() body: CreateRoleByExtendDto,
-    @Request() request,
-  ) {
-    return;
   }
 
   @Role(Roles.ADMIN)

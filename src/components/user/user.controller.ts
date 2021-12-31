@@ -17,13 +17,13 @@ import {
   RefreshTokenDto,
   GetUserProfileDto,
 } from '~/dto/user/user.dto';
-import { UserPipe } from '~/pipe/user/user.pipe';
+import { VerifyPipe } from '~/pipe/common/user.pipe';
 import { AuthenticationGuard } from '~/guard/authentication/authentication.guard';
 import { Role } from '~/decorators/role';
 import { Roles } from 'config/index';
 
 @Controller('api')
-@UsePipes(UserPipe)
+@UsePipes(VerifyPipe)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

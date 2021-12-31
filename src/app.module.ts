@@ -22,7 +22,7 @@ import { Authority } from 'components/authority/authority.entity';
       ...defaultConfig,
       name: 'userConnection',
       entities: [User, Password, Salt, Iterate, RoleOfUser, Role, Authority],
-      database: 'nodeData',
+      database: 'security',
     } as TypeOrmModuleOptions),
     UserModule,
     AuthorityModule,

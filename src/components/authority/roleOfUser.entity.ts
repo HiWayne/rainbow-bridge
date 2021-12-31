@@ -12,7 +12,7 @@ import { Expose, Exclude } from 'class-transformer';
 export class RoleOfUser {
   @Expose()
   @PrimaryColumn('int')
-  id: number;
+  id: number; // user_id
 
   @Expose()
   @Column('text')

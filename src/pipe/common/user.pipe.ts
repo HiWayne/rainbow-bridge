@@ -8,7 +8,7 @@ import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 
 @Injectable()
-export class UserPipe implements PipeTransform {
+export class VerifyPipe implements PipeTransform {
   async transform(value, { metatype }: ArgumentMetadata) {
     console.log(value, metatype);
     if (!metatype) {
