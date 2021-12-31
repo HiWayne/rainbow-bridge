@@ -27,9 +27,6 @@ export class Authority {
   @Column('int')
   creator: number;
 
-  @Column('int')
-  role_of_creator: number;
-
   @Expose()
   @CreateDateColumn({ type: 'datetime' })
   create_time: string;

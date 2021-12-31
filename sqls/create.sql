@@ -35,7 +35,6 @@ CREATE TABLE `authority` (
   `name` varchar(20) NOT NULL,
   `fundamental` tinyint(1) NOT NULL,
   `creator` int NOT NULL,
-  `role_of_creator` int NOT NULL,
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `desc` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -111,10 +110,8 @@ CREATE TABLE `role` (
   `name` varchar(20) DEFAULT NULL,
   `fundamental` tinyint(1) NOT NULL,
   `creator` int NOT NULL,
-  `role_of_creator` varchar(8192) DEFAULT NULL,
   `authorities` varchar(4096) DEFAULT NULL,
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `extend` int DEFAULT NULL,
   `desc` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -126,7 +123,7 @@ CREATE TABLE `role` (
 
 LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
-INSERT INTO `role` VALUES (1,'SUPER_ADMIN',1,-1,'-1',NULL,'2021-04-15 11:39:30',NULL,'超级管理员'),(2,'CONTENT_MANAGER',0,1,'SUPER_ADMIN',NULL,'2021-05-07 08:09:00',NULL,'内容管理员');
+INSERT INTO `role` VALUES (1,'SUPER_ADMIN',1,1,NULL,'2021-04-15 11:39:30','超级管理员'),(2,'ADMIN',1,1,NULL,'2021-05-07 08:09:00','普通管理员');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -2,6 +2,7 @@ import * as dayjs from 'dayjs';
 import {
   BadRequestException,
   ForbiddenException,
+  HttpCode,
   HttpException,
   HttpStatus,
   Injectable,
@@ -36,21 +37,28 @@ export class AuthorityService {
   ) {}
 
   public async createRole(body: CreateRoleDto, request) {
+    const { name } = body;
     const authority = request.__authority;
     if (!authority) {
       throw new ForbiddenException();
     }
-    const { userId, roles } = authority;
-    const roleText = roles.join(',');
-    console.log(userId, roleText);
+    const { userId, role } = authority;
     const data = await this.roleRepository.save({
-      ...body,
+      name,
       creator: userId,
-      role_of_creator: roleText,
       fundamental: false,
     });
     if (data) {
       return data;
+    } else {
+      throw new HttpException(
+        {
+          status: 2,
+          data: false,
+          message: '角色保存失败',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -128,8 +136,14 @@ export class AuthorityService {
           if (result) {
             const { roles: roleText } = result;
             const roles = roleText ? roleText.split(/,|，/) : [];
-            console.log('roles', roles);
-            return { userId: id, roles };
+            const roleEntities = await Promise.all(
+              roles.map(role => this.roleRepository.findOne({ name: role })),
+            );
+            if (Array.isArray(roleEntities) && roleEntities.length > 0) {
+              return { userId: id, roles: roleEntities };
+            } else {
+              return { userId: id, roles: null };
+            }
           } else {
             return null;
           }

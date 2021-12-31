@@ -27,19 +27,16 @@ export class AuthenticationGuard implements CanActivate {
       return false;
     }
     request.__authority = authority;
-    if (this.getMaxWeight(authority.roles)) {
+    if (this.isMaxWeight(authority.roles)) {
       return true;
     }
-    authority.roles = authority.roles.map(role => role.toLowerCase());
+    const userRoles = authority.roles.map(role => role.name.toLowerCase());
     return roles !== null && roles.length !== 0
-      ? roles.some(role =>
-          authority.roles.includes(role.toLocaleLowerCase() as Roles),
-        )
+      ? roles.some(role => userRoles.includes(role.toLowerCase()))
       : true;
   }
-  private getMaxWeight(roles) {
-    roles = roles.map(role => role.toLocaleLowerCase());
-    if (roles.includes('super_admin')) {
+  private isMaxWeight(roles) {
+    if (roles.includes('SUPER_ADMIN')) {
       return true;
     }
   }

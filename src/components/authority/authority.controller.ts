@@ -58,11 +58,13 @@ export class AuthorityController {
   }
 
   /**
-   * 所有role, authority的操作都需要admin及以上
-   * 其中删除role authority的操作只有super_admin有权限
+   * super_admin初始就存在
+   * 
+   * 所有role, authority的操作都需要admin及以上权限
+   * 其中删除role authority的操作只有创建它的人或super_admin有权限
    *
    * 只有权限等级大于等于创建该role的人
-   * 才有权利修改它的authority
+   * 才有权利修改它的authority，以及将该role赋给用户
    *
    * 只有权限等级大于等于创建该authority的人
    * 才有权利把它加入role

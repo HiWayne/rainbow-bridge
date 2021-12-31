@@ -28,13 +28,7 @@ export class Role {
   creator: number;
 
   @Column('text')
-  role_of_creator: string;
-
-  @Column('text')
   authorities: string;
-
-  @Column('int')
-  extend: number;
 
   @Expose()
   @CreateDateColumn({ type: 'datetime' })
