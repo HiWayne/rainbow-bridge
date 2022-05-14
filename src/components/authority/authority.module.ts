@@ -15,7 +15,7 @@ import { Iterate } from 'components/user/iterate.entity';
   imports: [
     TypeOrmModule.forFeature(
       [RoleOfUser, Authority, Role, User, Password, Salt, Iterate],
-      'userConnection',
+      'securityConnection',
     ),
   ],
   controllers: [AuthorityController],

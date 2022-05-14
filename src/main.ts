@@ -5,6 +5,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { ResponseInterceptor } from '~/interceptor/common/response.interceptor';
+import { WsAdapter } from '~/components/websocket/ws.adapter';
 
 declare const module: any;
 
@@ -13,8 +14,10 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter({ logger: true }),
   );
+  app.enableCors();
   app.useGlobalInterceptors(new ResponseInterceptor<any>());
-  await app.listen(3000);
+  app.useWebSocketAdapter(new WsAdapter(app));
+  await app.listen(3001);
 
   if (module && module.hot) {
     module.hot.accept();

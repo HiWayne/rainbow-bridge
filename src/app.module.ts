@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { defaultConfig } from '../ormconfig';
+import { securityConfig, docsConfig } from '../ormconfig';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -15,17 +15,36 @@ import { AuthorityModule } from 'components/authority/authority.module';
 import { RoleOfUser } from 'components/authority/roleOfUser.entity';
 import { Role } from 'components/authority/Role.entity';
 import { Authority } from 'components/authority/authority.entity';
+import { Doc } from 'components/doc/doc.entity';
+import { WsModule } from 'components/websocket/ws.module';
+import { DocModule } from 'components/doc/doc.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      ...defaultConfig,
-      name: 'userConnection',
-      entities: [User, Password, Salt, Iterate, RoleOfUser, Role, Authority],
-      database: 'security',
+      ...securityConfig,
+      name: 'securityConnection',
+      entities: [
+        User,
+        Password,
+        Salt,
+        Iterate,
+        RoleOfUser,
+        Role,
+        Authority,
+      ],
+    } as TypeOrmModuleOptions),
+    TypeOrmModule.forRoot({
+      ...docsConfig,
+      name: 'docsConnection',
+      entities: [
+        Doc,
+      ],
     } as TypeOrmModuleOptions),
     UserModule,
     AuthorityModule,
+    DocModule,
+    WsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

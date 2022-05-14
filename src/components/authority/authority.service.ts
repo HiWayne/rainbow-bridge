@@ -27,11 +27,11 @@ import { UserService } from '../user/user.service';
 @Injectable()
 export class AuthorityService {
   constructor(
-    @InjectRepository(RoleOfUser, 'userConnection')
+    @InjectRepository(RoleOfUser, 'securityConnection')
     private readonly roleOfUserRepository: Repository<RoleOfUser>,
-    @InjectRepository(Role, 'userConnection')
+    @InjectRepository(Role, 'securityConnection')
     private readonly roleRepository: Repository<Role>,
-    @InjectRepository(Authority, 'userConnection')
+    @InjectRepository(Authority, 'securityConnection')
     private readonly authorityRepository: Repository<Authority>,
     private readonly userService: UserService,
   ) {}

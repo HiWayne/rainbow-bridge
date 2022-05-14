@@ -15,7 +15,7 @@ import { Authority } from 'components/authority/authority.entity';
   imports: [
     TypeOrmModule.forFeature(
       [User, Password, Salt, Iterate, RoleOfUser, Role, Authority],
-      'userConnection',
+      'securityConnection',
     ),
   ],
   controllers: [UserController],

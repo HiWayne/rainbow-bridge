@@ -6,6 +6,8 @@ import {
   Query,
   UsePipes,
   UseGuards,
+  Header,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
@@ -63,8 +65,9 @@ export class UserController {
   }
 
   @Get('/user/profile')
-  async getUserProfile(@Query() query: GetUserProfileDto) {
-    return this.userService.getUserProfile(query);
+  async getUserProfile(@Req() req) {
+    const { token } = req.headers;
+    return this.userService.getUserProfile(token);
   }
 
   @Get('/user/test')

@@ -35,19 +35,19 @@ const { ITERATECOUNT, privateKeyPath, publicKeyPath } = config;
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User, 'userConnection')
+    @InjectRepository(User, 'securityConnection')
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Password, 'userConnection')
+    @InjectRepository(Password, 'securityConnection')
     private readonly passwordRepository: Repository<Password>,
-    @InjectRepository(Salt, 'userConnection')
+    @InjectRepository(Salt, 'securityConnection')
     private readonly saltRepository: Repository<Salt>,
-    @InjectRepository(Iterate, 'userConnection')
+    @InjectRepository(Iterate, 'securityConnection')
     private readonly iterateRepository: Repository<Iterate>,
   ) {}
 
   // 创建用户
   public async createUser(body: UserCreateDto) {
-    const entityManager = getManager('userConnection');
+    const entityManager = getManager('securityConnection');
     const result = await entityManager.transaction(
       'REPEATABLE READ',
       async (runInTransaction: EntityManager) => {
@@ -198,7 +198,7 @@ export class UserService {
   }
 
   // 根据token获取用户信息
-  private async getUserByToken(token: string): Promise<User> {
+  public async getUserByToken(token: string): Promise<User> {
     if (!token) {
       return null;
     }
@@ -228,14 +228,16 @@ export class UserService {
     }
   }
 
-  public async refreshToken(body: RefreshTokenDto): Promise<string> {
+  public async refreshToken(
+    body: RefreshTokenDto,
+  ): Promise<{ access_token: string }> {
     const { token } = body;
     const decoded = this.decodeToken(token);
     if (decoded && decoded.data.type === 'refresh') {
       if (new Date().getTime() < decoded.expires) {
         const id = decoded.data.id;
         const accessToken = this.createAccessToken({ id, type: 'access' });
-        return accessToken;
+        return { access_token: accessToken };
       } else {
         return null;
       }
@@ -244,8 +246,7 @@ export class UserService {
     }
   }
 
-  public async getUserProfile(query) {
-    const { token } = query;
+  public async getUserProfile(token: string) {
     const user = await this.getUserByToken(token);
     return user;
   }

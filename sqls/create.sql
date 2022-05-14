@@ -214,3 +214,27 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2021-12-30 14:39:50
+
+drop database `doc`;
+
+CREATE DATABASE `doc`;
+
+use `doc`;
+
+DROP TABLE IF EXISTS `doc`;
+
+CREATE TABLE `doc` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) CHARACTER SET utf8mb4 NOT NULL,
+  `desc` varchar(200) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `content` LONGTEXT CHARACTER SET utf8mb4,
+  `cover` varchar(200),
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `creator` int NOT NULL,
+  `collaborator` varchar(9999),
+  `comment` int,
+  `like` int,
+  `collect` int,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
