@@ -6,6 +6,10 @@ import {
 } from '@nestjs/platform-fastify';
 import { ResponseInterceptor } from '~/interceptor/common/response.interceptor';
 import { WsAdapter } from '~/components/websocket/ws.adapter';
+import dayjs = require('dayjs')
+import i18n = require('dayjs/locale/de');
+
+dayjs.locale('de')
 
 declare const module: any;
 

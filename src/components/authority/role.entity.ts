@@ -31,6 +31,6 @@ export class Role {
   authorities: string;
 
   @Expose()
-  @CreateDateColumn({ type: 'datetime' })
-  create_time: string;
+  @CreateDateColumn({ type: 'bigint' })
+  create_time: number;
 }

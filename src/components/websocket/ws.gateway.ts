@@ -73,7 +73,16 @@ export class WsGateway {
             content: JSON.stringify(newContent),
           });
           // 3. Emit the delta to all of the clients.
-          this.broadcast({ event: 'doc', delta, update_time: new Date().getTime(), message: '' }, client);
+          this.broadcast(
+            {
+              event: 'doc',
+              delta,
+              // 时区
+              update_time: new Date().getTime(),
+              message: '',
+            },
+            client,
+          );
         }
         return {
           status: 'success',

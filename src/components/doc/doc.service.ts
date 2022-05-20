@@ -1,30 +1,9 @@
-import fs = require('fs');
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, getManager, EntityManager } from 'typeorm';
-import {
-  UserCreateDto,
-  UserFindByIdDto,
-  UserFindByNameDto,
-  UserNameDto,
-  LoginDto,
-  RefreshTokenDto,
-} from '~/dto/user/user.dto';
-import { SaltDto } from '~/dto/salt/salt.dto';
-import { PasswordDto } from '~/dto/password/password.dto';
-import { IterateDto } from '~/dto/iterate/iterate.dto';
-import * as jwt from 'jsonwebtoken';
-import * as CryptoJS from 'crypto-js';
-import config, { Roles } from 'config/index';
+import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Doc } from './doc.entity';
 import {
-  transformClass,
-  isExist,
-  getTimeWithMillisecond,
-} from 'shared/utils/common';
-import {
-  DocDetailDto,
   DocCreateDto,
   DocUpdateDto,
   GetDocListDto,
@@ -58,6 +37,7 @@ export class DocService {
           cover: cover || '',
           like: 0,
           collect: 0,
+          create_time: dayjs().valueOf(),
         });
         return { id: doc.id };
       } else {
@@ -101,7 +81,7 @@ export class DocService {
           }, {});
           await this.docRepository.update(id, {
             ...bodyFilter,
-            update_time: dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss'),
+            update_time: dayjs().valueOf(),
           });
           return true;
         } else {
@@ -149,7 +129,11 @@ export class DocService {
         if (isValid) {
           const doc = await this.docRepository.findOne({ id: docId });
           if (doc) {
-            return doc;
+            return {
+              ...doc,
+              update_time: Number(doc.update_time),
+              create_time: Number(doc.create_time),
+            };
           } else {
             throw new HttpException(
               {
@@ -209,7 +193,12 @@ export class DocService {
           try {
             const user = await this.userRepository.findOne({ id: doc.creator });
             const userName = user?.name || '';
-            return { ...doc, creator_name: userName };
+            return {
+              ...doc,
+              creator_name: userName,
+              update_time: Number(doc.update_time),
+              create_time: Number(doc.create_time),
+            };
           } catch (e) {
             console.log(e);
           }

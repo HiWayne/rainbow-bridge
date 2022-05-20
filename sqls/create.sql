@@ -35,7 +35,7 @@ CREATE TABLE `authority` (
   `name` varchar(20) NOT NULL,
   `fundamental` tinyint(1) NOT NULL,
   `creator` int NOT NULL,
-  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_time` BIGINT,
   `desc` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -111,7 +111,7 @@ CREATE TABLE `role` (
   `fundamental` tinyint(1) NOT NULL,
   `creator` int NOT NULL,
   `authorities` varchar(4096) DEFAULT NULL,
-  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_time` BIGINT,
   `desc` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -137,8 +137,8 @@ DROP TABLE IF EXISTS `role_of_user`;
 CREATE TABLE `role_of_user` (
   `id` int NOT NULL,
   `roles` varchar(4096) DEFAULT NULL,
-  `update_time` timestamp NULL DEFAULT NULL,
-  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` BIGINT,
+  `create_time` BIGINT,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -189,9 +189,9 @@ CREATE TABLE `user` (
   `name` varchar(15) NOT NULL,
   `avatar` varchar(10860) DEFAULT NULL,
   `desc` varchar(100) DEFAULT NULL,
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_time` BIGINT COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -229,8 +229,8 @@ CREATE TABLE `doc` (
   `desc` varchar(200) CHARACTER SET utf8mb4 DEFAULT NULL,
   `content` LONGTEXT CHARACTER SET utf8mb4,
   `cover` varchar(200),
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` BIGINT COMMENT '创建时间',
+  `update_time` BIGINT COMMENT '更新时间',
   `creator` int NOT NULL,
   `collaborator` varchar(9999),
   `comment` int,

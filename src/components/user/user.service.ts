@@ -25,6 +25,7 @@ import {
   isExist,
   getTimeWithMillisecond,
 } from 'shared/utils/common';
+import dayjs = require('dayjs');
 
 // jwt非对称算法名称
 const ALGORITHM_NAME = 'HS512';
@@ -68,6 +69,7 @@ export class UserService {
           User,
           body,
         );
+        userEntity.create_time = dayjs().valueOf();
         const user = await runInTransaction.save<User>(userEntity);
         const { id } = user;
         // 生成盐

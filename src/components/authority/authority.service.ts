@@ -47,6 +47,7 @@ export class AuthorityService {
       name,
       creator: userId,
       fundamental: false,
+      create_time: dayjs().valueOf(),
     });
     if (data) {
       return data;
@@ -109,7 +110,7 @@ export class AuthorityService {
       const result = await this.roleOfUserRepository.save({
         id,
         roles: rolesText,
-        update_time: dayjs().format(),
+        update_time: dayjs().valueOf(),
       });
       if (result) {
         return true;

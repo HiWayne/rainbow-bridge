@@ -30,12 +30,12 @@ export class Doc {
   cover: string;
 
   @Expose()
-  @CreateDateColumn({ type: 'datetime' })
-  create_time: string;
+  @CreateDateColumn({ type: 'bigint' })
+  create_time: number;
 
   @Expose()
-  @CreateDateColumn({ type: 'datetime' })
-  update_time: string;
+  @CreateDateColumn({ type: 'bigint' })
+  update_time: number;
 
   @Expose()
   @Column({ type: 'int' })

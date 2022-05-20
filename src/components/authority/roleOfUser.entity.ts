@@ -1,7 +1,6 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   PrimaryColumn,
 } from 'typeorm';
@@ -19,10 +18,10 @@ export class RoleOfUser {
   roles: string;
 
   @Expose()
-  @Column('datetime')
-  update_time: string;
+  @Column('bigint')
+  update_time: number;
 
   @Expose()
-  @CreateDateColumn({ type: 'datetime' })
-  create_time: string;
+  @CreateDateColumn({ type: 'bigint' })
+  create_time: number;
 }
