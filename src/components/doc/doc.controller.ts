@@ -71,7 +71,7 @@ export class DocController {
     return await this.docService.addPeopleToDocPermission(body, request);
   }
 
-  @Get('/doc/')
+  @Get('/doc/verify/permission')
   async verifyPermissions(@Query() query: VerifyPermissionsDto) {
     const { user_id, doc_id, permission } = query;
     return await this.docService.verifyPermissions(
