@@ -20,11 +20,11 @@ import {
   RoleRemoveAuthenticationDto,
   DeleteAuthenticationDto,
   DeleteRoleDto,
-} from '~/dto/authority/authority.dto';
-import { VerifyPipe } from '~/pipe/common/user.pipe';
+} from '~/components/authority/authority.dto';
+import { VerifyPipe } from '~/pipe/common/verifyType.pipe';
 import { AuthenticationGuard } from '~/guard/authentication/authentication.guard';
 import { Role } from '~/decorators/role';
-import { Roles } from 'config/index';
+import { Roles } from '~/enums/index';
 import { UserService } from 'components/user/user.service';
 
 @Controller('api')

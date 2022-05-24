@@ -9,13 +9,13 @@ import {
   UserNameDto,
   LoginDto,
   RefreshTokenDto,
-} from '~/dto/user/user.dto';
-import { SaltDto } from '~/dto/salt/salt.dto';
-import { PasswordDto } from '~/dto/password/password.dto';
-import { IterateDto } from '~/dto/iterate/iterate.dto';
+} from '~/components/user/user.dto';
+import { SaltDto } from '~/components/user/salt.dto';
+import { PasswordDto } from '~/components/user/password.dto';
+import { IterateDto } from '~/components/user/iterate.dto';
 import * as jwt from 'jsonwebtoken';
 import * as CryptoJS from 'crypto-js';
-import config, { Roles } from 'config/index';
+import config, { Roles } from '~/enums/index';
 import { User } from './user.entity';
 import { Password } from './password.entity';
 import { Salt } from './salt.entity';

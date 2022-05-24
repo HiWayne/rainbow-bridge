@@ -15,7 +15,7 @@
       "~/*": ["./src/*"],
       "shared/*": ["./src/shared/*"],
       "components/*": ["./src/components/*"],
-      "config/*": ["./config/*"],
+      "config/*": ["src/enums/*"],
     }
   }
 }

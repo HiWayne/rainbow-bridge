@@ -5,7 +5,9 @@ import {
   MaxLength,
   IsOptional,
   IsIn,
+  IsArray,
 } from 'class-validator';
+import { Permission } from './doc.service';
 
 export class DocUpdateDto {
   @IsInt()
@@ -73,4 +75,34 @@ export class GetDocListDto {
 export class DeleteDocDto {
   @IsString()
   readonly docId: string;
+}
+
+export class GetPermissonsFromDocDto {
+  @IsString()
+  readonly user_id: string;
+
+  @IsString()
+  readonly doc_id: string;
+}
+
+export class AddPeopleToDocPermissionDto {
+  @IsInt()
+  readonly user_id: number;
+
+  @IsInt()
+  readonly doc_id: number;
+
+  @IsArray()
+  readonly permissions: Permission[];
+}
+
+export class VerifyPermissionsDto {
+  @IsString()
+  readonly user_id: string;
+
+  @IsString()
+  readonly doc_id: string;
+
+  @IsString()
+  readonly permission: Permission;
 }

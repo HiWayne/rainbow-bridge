@@ -18,11 +18,11 @@ import {
   LoginDto,
   RefreshTokenDto,
   GetUserProfileDto,
-} from '~/dto/user/user.dto';
-import { VerifyPipe } from '~/pipe/common/user.pipe';
+} from '~/components/user/user.dto';
+import { VerifyPipe } from '~/pipe/common/verifyType.pipe';
 import { AuthenticationGuard } from '~/guard/authentication/authentication.guard';
 import { Role } from '~/decorators/role';
-import { Roles } from 'config/index';
+import { Roles } from '~/enums/index';
 
 @Controller('api')
 @UsePipes(VerifyPipe)

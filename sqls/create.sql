@@ -232,9 +232,43 @@ CREATE TABLE `doc` (
   `create_time` BIGINT COMMENT '创建时间',
   `update_time` BIGINT COMMENT '更新时间',
   `creator` int NOT NULL,
-  `collaborator` varchar(9999),
+  `collaborators` varchar(10666),
+  `viewers` varchar(10666),
   `comment` int,
   `like` int,
   `collect` int,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `doc_comment` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `doc_id` int,
+  `content` LONGTEXT CHARACTER SET utf8mb4,
+  `creator` int NOT NULL,
+  `like` int,
+  `reply` int,
+  `replied` varchar(10666),
+  `create_time` BIGINT COMMENT '创建时间',
+  `update_time` BIGINT COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `user_collect` (
+  `user_id` int,
+  `doc_ids` varchar(10666),
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `doc_collect` (
+  `doc_ids` int,
+  `user_id` varchar(10666),
+  PRIMARY KEY (`doc_ids`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `collect_time` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `doc_ids` int,
+  `user_id` int,
+  `create_time` BIGINT COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

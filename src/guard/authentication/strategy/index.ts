@@ -1,4 +1,4 @@
-import { Headers } from 'config/index';
+import { Headers } from '~/enums/index';
 
 const verifyHeaders = checkFn => (headers, ...args) => {
   if (headers !== null && typeof headers === 'object') {

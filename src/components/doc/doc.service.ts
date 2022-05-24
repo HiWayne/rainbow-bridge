@@ -8,11 +8,17 @@ import {
   DocUpdateDto,
   GetDocListDto,
   DeleteDocDto,
-} from '~/dto/doc/doc.dto';
+  GetPermissonsFromDocDto,
+  AddPeopleToDocPermissionDto,
+} from '~/components/doc/doc.dto';
 import { UserService } from '../user/user.service';
 import dayjs = require('dayjs');
 
-type Permission = 'view' | 'modify' | 'share_to_view' | 'share_to_modify';
+export type Permission =
+  | 'view'
+  | 'modify'
+  | 'share_to_view'
+  | 'share_to_modify';
 
 @Injectable()
 export class DocService {
@@ -24,9 +30,9 @@ export class DocService {
     private readonly userService: UserService,
   ) {}
 
-  public async createDoc(token: string, body: DocCreateDto) {
+  public async createDoc(body: DocCreateDto, request) {
     try {
-      const user = await this.userService.getUserByToken(token);
+      const user = request.__user;
       if (user) {
         const { name, desc, content, cover } = body;
         const doc = await this.docRepository.save({
@@ -116,16 +122,12 @@ export class DocService {
     }
   }
 
-  public async getDocDetail(token?: string, id?: string | number) {
+  public async getDocDetail(id: string | number, request) {
     try {
-      const user: any = !token
-        ? true
-        : await this.userService.getUserByToken(token);
+      const user = request.__user;
       if (user) {
         const docId = Number(id);
-        const isValid = !token
-          ? true
-          : await this.verifyPermissions(user.id, docId, 'view');
+        const isValid = await this.verifyPermissions(user.id, docId, 'view');
         if (isValid) {
           const doc = await this.docRepository.findOne({ id: docId });
           if (doc) {
@@ -183,7 +185,7 @@ export class DocService {
     const ownDocs = await getOwnDocs;
     const allDocs = await getAllDocs;
     const collaborativeDocs = allDocs.filter(doc => {
-      const collaborators = doc.collaborator?.split(',') || [];
+      const collaborators = doc.collaborators?.split(',') || [];
       return collaborators.includes(userId + '');
     });
     const docs = [...ownDocs, ...collaborativeDocs];
@@ -218,17 +220,138 @@ export class DocService {
     }
   }
 
-  public async getPermissonsFromDoc(query): Promise<Permission[]> {
-    return [];
+  public async getPermissionsFromDoc(
+    query: GetPermissonsFromDocDto,
+  ): Promise<Permission[]> {
+    const { user_id, doc_id } = query;
+    try {
+      const doc = await this.docRepository.findOne({ id: Number(doc_id) });
+      if (doc) {
+        const collaborators = doc.collaborators.split(',');
+        const canEdit = collaborators.includes(user_id);
+        if (canEdit) {
+          return ['modify', 'share_to_modify'];
+        } else {
+          const viewers = doc.viewers.split(',');
+          const canView = viewers.includes(user_id);
+          if (canView) {
+            return ['view', 'share_to_view'];
+          } else {
+            return [];
+          }
+        }
+      } else {
+        throw new HttpException(
+          {
+            status: 4,
+            data: false,
+            message: '文档不存在',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      return [];
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: 0,
+          data: null,
+          message: error,
+        },
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
   }
 
-  public async addPeopleToDocPermission(token: string, body) {}
+  public async addPeopleToDocPermission(
+    body: AddPeopleToDocPermissionDto,
+    request,
+  ) {
+    const { user_id, doc_id, permissions } = body;
+    const permissionList = new Set(permissions);
+    const user = request.__user;
+    if (user) {
+      const doc = await this.docRepository.findOne({ id: doc_id });
+      if (doc) {
+        const results = await Promise.all(
+          Array.from(permissionList).map(async permission => {
+            switch (permission) {
+              case 'view':
+                const viewers = doc.viewers.split(',');
+                if (!viewers.includes(`${user_id}`)) {
+                  viewers.push(`${user_id}`);
+                  const newViewers = viewers.join(',');
+                  const result = await this.docRepository.update(doc_id, {
+                    viewers: newViewers,
+                  });
+                  console.log(result);
+                  return true;
+                }
+              case 'modify':
+                const collaborators = doc.collaborators.split(',');
+                if (!collaborators.includes(`${user_id}`)) {
+                  collaborators.push(`${user_id}`);
+                  const newCollaborators = collaborators.join(',');
+                  const result = await this.docRepository.update(doc_id, {
+                    collaborators: newCollaborators,
+                  });
+                  console.log(result);
+                  return true;
+                }
+              default:
+                return true;
+            }
+          }),
+        );
+        if (results.every(result => result)) {
+          return true;
+        } else {
+          throw new HttpException(
+            {
+              status: 0,
+              data: false,
+              message: '更新权限失败',
+            },
+            HttpStatus.BAD_GATEWAY,
+          );
+        }
+      } else {
+        throw new HttpException(
+          {
+            status: 4,
+            data: false,
+            message: '文档不存在',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    } else {
+      throw new HttpException(
+        {
+          status: 4,
+          data: false,
+          message: '用户未登录或没有权限',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 
   public async verifyPermissions(
     userId: number,
     docId: number,
     permission: Permission,
   ): Promise<boolean> {
-    return true;
+    const doc = await this.docRepository.findOne({ id: docId });
+    switch (permission) {
+      case 'view':
+        const viewers = doc.viewers.split(',');
+        return viewers.includes(`${userId}`);
+      case 'modify':
+        const collaborators = doc.collaborators.split(',');
+        return collaborators.includes(`${userId}`);
+      default:
+        return false;
+    }
   }
 }

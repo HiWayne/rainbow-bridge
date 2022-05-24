@@ -9,7 +9,7 @@ import * as WebSocket from 'ws';
 import { diff, patch } from 'jsondiffpatch';
 import { UserService } from '../user/user.service';
 import { DocService } from '../doc/doc.service';
-import { WebsocketDto } from '~/dto/websocket/websocket.dto';
+import { WebsocketDto } from '~/components/websocket/websocket.dto';
 
 @WebSocketGateway(3002, { transports: ['websocket'] })
 export class WsGateway {

@@ -16,8 +16,8 @@ import {
   RoleRemoveAuthenticationDto,
   DeleteAuthenticationDto,
   DeleteRoleDto,
-} from '~/dto/authority/authority.dto';
-import config, { Roles } from 'config/index';
+} from '~/components/authority/authority.dto';
+import config, { Roles } from '~/enums/index';
 import { RoleOfUser } from './roleOfUser.entity';
 import { Authority } from './authority.entity';
 import { Role } from './Role.entity';

@@ -42,8 +42,12 @@ export class Doc {
   creator: number;
 
   @Expose()
-  @Column({ length: 9999 })
-  collaborator: string;
+  @Column({ length: 10666 })
+  viewers: string;
+
+  @Expose()
+  @Column({ length: 10666 })
+  collaborators: string;
 
   @Expose()
   @Column({ type: 'int' })
