@@ -18,9 +18,10 @@ import {
   DocUpdateDto,
   GetDocListDto,
   DeleteDocDto,
-  GetPermissonsFromDocDto,
+  GetPermissionsFromDocDto,
   AddPeopleToDocPermissionDto,
   VerifyPermissionsDto,
+  AddPermissionsToDocDto,
 } from '~/components/doc/doc.dto';
 import { LoginGuard } from '~/guard/login/login.guard';
 
@@ -30,9 +31,9 @@ export class DocController {
   constructor(private readonly docService: DocService) {}
 
   @Get('/doc/detail')
-  @UseGuards(LoginGuard)
-  async getDocDetail(@Query() query: DocDetailDto, @Request() request) {
-    return await this.docService.getDocDetail(query.id, request);
+  async getDocDetail(@Query() query: DocDetailDto, @Req() req) {
+    const { token } = req.headers;
+    return await this.docService.getDocDetail(query.id, token);
   }
 
   @Post('/doc/create')
@@ -58,7 +59,7 @@ export class DocController {
   }
 
   @Get('/doc/permissions')
-  async getPermissionsFromDoc(@Query() query: GetPermissonsFromDocDto) {
+  async getPermissionsFromDoc(@Query() query: GetPermissionsFromDocDto) {
     return await this.docService.getPermissionsFromDoc(query);
   }
 
@@ -79,5 +80,11 @@ export class DocController {
       Number(doc_id),
       permission,
     );
+  }
+
+  @Post('/doc/add/permissions')
+  async addPermissionsToDoc(@Body() body: AddPermissionsToDocDto, @Req() req) {
+    const { token } = req.headers;
+    return await this.docService.addPermissionsToDoc(body, token);
   }
 }

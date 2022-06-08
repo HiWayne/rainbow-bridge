@@ -77,9 +77,10 @@ export class DeleteDocDto {
   readonly docId: string;
 }
 
-export class GetPermissonsFromDocDto {
+export class GetPermissionsFromDocDto {
+  @IsOptional()
   @IsString()
-  readonly user_id: string;
+  readonly user_id?: string;
 
   @IsString()
   readonly doc_id: string;
@@ -105,4 +106,16 @@ export class VerifyPermissionsDto {
 
   @IsString()
   readonly permission: Permission;
+}
+
+export class AddPermissionsToDocDto {
+  @IsInt()
+  doc_id: number;
+
+  @IsArray()
+  permissions: Permission[];
+
+  @IsOptional()
+  @IsInt()
+  expired_time?: number;
 }

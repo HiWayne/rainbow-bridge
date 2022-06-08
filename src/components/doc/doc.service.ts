@@ -8,17 +8,19 @@ import {
   DocUpdateDto,
   GetDocListDto,
   DeleteDocDto,
-  GetPermissonsFromDocDto,
+  GetPermissionsFromDocDto,
   AddPeopleToDocPermissionDto,
 } from '~/components/doc/doc.dto';
 import { UserService } from '../user/user.service';
 import dayjs = require('dayjs');
+import { DocAuthority } from './docAuthority.entity';
 
 export type Permission =
   | 'view'
   | 'modify'
   | 'share_to_view'
-  | 'share_to_modify';
+  | 'share_to_modify'
+  | 'need_login';
 
 @Injectable()
 export class DocService {
@@ -27,6 +29,8 @@ export class DocService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Doc, 'docsConnection')
     private readonly docRepository: Repository<Doc>,
+    @InjectRepository(DocAuthority, 'docsConnection')
+    private readonly docAuthority: Repository<DocAuthority>,
     private readonly userService: UserService,
   ) {}
 
@@ -70,26 +74,72 @@ export class DocService {
 
   public async updateDoc(token?: string, body?: DocUpdateDto) {
     try {
-      const user: any = !token
-        ? true
-        : await this.userService.getUserByToken(token);
-      if (user) {
-        const { id } = body;
-        const isValid = !token
+      const permissions = await this.getPermissionsFromDoc({
+        doc_id: body.id + '',
+      });
+      if (permissions.includes('need_login')) {
+        const user: any = !token
           ? true
-          : await this.verifyPermissions(user.id, id, 'modify');
-        if (isValid) {
+          : await this.userService.getUserByToken(token);
+        if (user) {
+          const { id } = body;
+          const isValid = !token
+            ? true
+            : await this.verifyPermissions(user.id, id, 'modify');
+          if (isValid) {
+            const bodyFilter = Reflect.ownKeys(body).reduce((newObj, key) => {
+              if (body[key] !== undefined || body[key] !== null) {
+                newObj[key] = body[key];
+              }
+              return newObj;
+            }, {});
+            const result = await this.docRepository.update(id, {
+              ...bodyFilter,
+              update_time: dayjs().valueOf(),
+            });
+            if (result.affected >= 1) {
+              return true;
+            } else {
+              return false
+            }
+          } else {
+            throw new HttpException(
+              {
+                status: 4,
+                data: false,
+                message: '没有权限修改',
+              },
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+        } else {
+          throw new HttpException(
+            {
+              status: 4,
+              data: false,
+              message: '用户未登录',
+            },
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+      } else {
+        if (permissions.includes('modify')) {
           const bodyFilter = Reflect.ownKeys(body).reduce((newObj, key) => {
             if (body[key] !== undefined || body[key] !== null) {
               newObj[key] = body[key];
             }
             return newObj;
           }, {});
-          await this.docRepository.update(id, {
+          const { id } = body;
+          const result = await this.docRepository.update(id, {
             ...bodyFilter,
             update_time: dayjs().valueOf(),
           });
-          return true;
+          if (result.affected >= 1) {
+            return true;
+          } else {
+            return false
+          }
         } else {
           throw new HttpException(
             {
@@ -100,15 +150,6 @@ export class DocService {
             HttpStatus.BAD_REQUEST,
           );
         }
-      } else {
-        throw new HttpException(
-          {
-            status: 4,
-            data: false,
-            message: '用户未登录',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
       }
     } catch (error) {
       throw new HttpException(
@@ -122,10 +163,15 @@ export class DocService {
     }
   }
 
-  public async getDocDetail(id: string | number, request) {
+  public async getDocDetail(id: string, token) {
     try {
-      const user = request.__user;
-      if (user) {
+      const user = await this.userService.getUserByToken(token);
+      const permissions = await this.getPermissionsFromDoc({
+        doc_id: id,
+        user_id: user ? user.id + '' : undefined,
+      });
+
+      if (user && permissions.includes('need_login')) {
         const docId = Number(id);
         const isValid = await this.verifyPermissions(user.id, docId, 'view');
         if (isValid) {
@@ -157,14 +203,37 @@ export class DocService {
           );
         }
       } else {
-        throw new HttpException(
-          {
-            status: 4,
-            data: false,
-            message: '用户未登录',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
+        if (permissions.includes('need_login')) {
+          throw new HttpException(
+            {
+              status: 4,
+              data: false,
+              message: '用户未登录',
+            },
+            HttpStatus.BAD_REQUEST,
+          );
+        } else {
+          if (permissions.includes('view')) {
+            const docId = Number(id);
+            const doc = await this.docRepository.findOne({ id: docId });
+            if (doc) {
+              return {
+                ...doc,
+                update_time: Number(doc.update_time),
+                create_time: Number(doc.create_time),
+              };
+            } else {
+              throw new HttpException(
+                {
+                  status: 4,
+                  data: null,
+                  message: '文档不存在',
+                },
+                HttpStatus.BAD_REQUEST,
+              );
+            }
+          }
+        }
       }
     } catch (error) {
       throw new HttpException(
@@ -202,7 +271,7 @@ export class DocService {
               create_time: Number(doc.create_time),
             };
           } catch (e) {
-            console.log(e);
+            console.error(e);
           }
         })(),
       ),
@@ -213,7 +282,7 @@ export class DocService {
   public async deleteDoc(query: DeleteDocDto) {
     const { docId } = query;
     const result = await this.docRepository.delete({ id: Number(docId) });
-    if (result.affected) {
+    if (result.affected >= 1) {
       return true;
     } else {
       return false;
@@ -221,36 +290,52 @@ export class DocService {
   }
 
   public async getPermissionsFromDoc(
-    query: GetPermissonsFromDocDto,
+    query: GetPermissionsFromDocDto,
   ): Promise<Permission[]> {
     const { user_id, doc_id } = query;
     try {
-      const doc = await this.docRepository.findOne({ id: Number(doc_id) });
-      if (doc) {
-        const collaborators = doc.collaborators.split(',');
-        const canEdit = collaborators.includes(user_id);
-        if (canEdit) {
-          return ['modify', 'share_to_modify'];
-        } else {
-          const viewers = doc.viewers.split(',');
-          const canView = viewers.includes(user_id);
-          if (canView) {
-            return ['view', 'share_to_view'];
-          } else {
-            return [];
-          }
-        }
-      } else {
-        throw new HttpException(
-          {
-            status: 4,
-            data: false,
-            message: '文档不存在',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
+      const docAuthority = await this.docAuthority.findOne({
+        doc_id: Number(doc_id),
+      });
+      let permissions: Permission[] = [];
+      if (docAuthority) {
+        permissions = docAuthority.authority.split(',') as any;
       }
-      return [];
+      if (user_id === undefined) {
+        return permissions;
+      } else {
+        const doc = await this.docRepository.findOne({ id: Number(doc_id) });
+        if (doc) {
+          if (permissions.includes('modify')) {
+            const collaborators = doc.collaborators.split(',');
+            const canEdit = collaborators.includes(user_id);
+            if (canEdit) {
+              return ['modify', 'share_to_modify'];
+            } else {
+              if (permissions.includes('view')) {
+                const viewers = doc.viewers.split(',');
+                const canView = viewers.includes(user_id);
+                if (canView) {
+                  return ['view', 'share_to_view'];
+                } else {
+                  return [];
+                }
+              } else {
+                return ['modify', 'share_to_modify', 'view', 'share_to_view'];
+              }
+            }
+          }
+        } else {
+          throw new HttpException(
+            {
+              status: 4,
+              data: false,
+              message: '文档不存在',
+            },
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+      }
     } catch (error) {
       throw new HttpException(
         {
@@ -259,6 +344,50 @@ export class DocService {
           message: error,
         },
         HttpStatus.BAD_GATEWAY,
+      );
+    }
+  }
+
+  public async addPermissionsToDoc(body, token) {
+    const { permissions, doc_id, expired_time } = body;
+    const user = await this.userService.getUserByToken(token);
+    if (user) {
+      const docAuthority = await this.docAuthority.findOne({ doc_id: doc_id });
+      if (docAuthority) {
+        const authority = (docAuthority.authority || '').split(',');
+        authority.push(...(permissions || []));
+        const result = await this.docAuthority.update(
+          { doc_id: doc_id },
+          { authority: authority.join(',') },
+        );
+        if (result.affected >= 1) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        const result = await this.docAuthority.save({
+          doc_id: doc_id,
+          authority: permissions.join(','),
+          expired:
+            expired_time !== undefined
+              ? dayjs().valueOf() + expired_time
+              : null,
+        });
+        if (result) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } else {
+      throw new HttpException(
+        {
+          status: 4,
+          data: false,
+          message: '用户未登录或没有权限',
+        },
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -284,8 +413,11 @@ export class DocService {
                   const result = await this.docRepository.update(doc_id, {
                     viewers: newViewers,
                   });
-                  console.log(result);
-                  return true;
+                  if (result.affected >= 1) {
+                    return true;
+                  } else {
+                    return false
+                  }
                 }
               case 'modify':
                 const collaborators = doc.collaborators.split(',');
@@ -295,8 +427,11 @@ export class DocService {
                   const result = await this.docRepository.update(doc_id, {
                     collaborators: newCollaborators,
                   });
-                  console.log(result);
-                  return true;
+                  if (result.affected >= 1) {
+                    return true;
+                  } else {
+                    return false
+                  }
                 }
               default:
                 return true;
@@ -310,7 +445,7 @@ export class DocService {
             {
               status: 0,
               data: false,
-              message: '更新权限失败',
+              message: '添加权限失败',
             },
             HttpStatus.BAD_GATEWAY,
           );

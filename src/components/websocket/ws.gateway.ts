@@ -65,7 +65,7 @@ export class WsGateway {
           try {
             newContent = patch(docContent, delta);
           } catch (e) {
-            console.log(e);
+            console.error(e);
           }
           // 2. We need to patch the server state so that it doesn't become stale
           this.docService.updateDoc(token, {

@@ -11,6 +11,7 @@ import { Salt } from '../user/salt.entity';
 import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import { WsGateway } from './ws.gateway';
+import { DocAuthority } from '../doc/docAuthority.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { WsGateway } from './ws.gateway';
       [User, Password, Salt, Iterate, RoleOfUser, Authority],
       'securityConnection',
     ),
-    TypeOrmModule.forFeature([Doc], 'docsConnection'),
+    TypeOrmModule.forFeature([Doc, DocAuthority], 'docsConnection'),
   ],
   providers: [WsGateway, UserService, DocService],
 })

@@ -11,6 +11,7 @@ import { Iterate } from '../user/iterate.entity';
 import { RoleOfUser } from '../authority/roleOfUser.entity';
 import { Role } from '../authority/role.entity';
 import { Authority } from '../authority/authority.entity';
+import { DocAuthority } from './docAuthority.entity';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { Authority } from '../authority/authority.entity';
       'securityConnection',
     ),
     TypeOrmModule.forFeature(
-      [Doc],
+      [Doc, DocAuthority],
       'docsConnection',
     ),
   ],

@@ -240,6 +240,20 @@ CREATE TABLE `doc` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `doc_authority`;
+
+CREATE TABLE `doc_authority` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `doc_id` int,
+  `authority` varchar(100),
+  `expired` BIGINT COMMENT '失效时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE INDEX indexName ON `doc_authority` (doc_id);
+
+DROP TABLE IF EXISTS `doc_comment`;
+
 CREATE TABLE `doc_comment` (
   `id` int NOT NULL AUTO_INCREMENT,
   `doc_id` int,
@@ -253,17 +267,23 @@ CREATE TABLE `doc_comment` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `user_collect`;
+
 CREATE TABLE `user_collect` (
   `user_id` int,
   `doc_ids` varchar(10666),
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `doc_collect`;
+
 CREATE TABLE `doc_collect` (
   `doc_ids` int,
   `user_id` varchar(10666),
   PRIMARY KEY (`doc_ids`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `collect_time`;
 
 CREATE TABLE `collect_time` (
   `id` int NOT NULL AUTO_INCREMENT,
